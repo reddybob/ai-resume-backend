@@ -5,7 +5,9 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 app = Flask(__name__)
-CORS(app)  # 🔥 Important (frontend connect avvadanki)
+from flask_cors import CORS
+
+CORS(app, resources={r"/*": {"origins": "*"}})  # 🔥 Important (frontend connect avvadanki)
 
 # Job descriptions (AI comparison kosam)
 job_descriptions = {
