@@ -4,7 +4,9 @@ import PyPDF2
 import os
 
 app = Flask(__name__)
-CORS(app)   # simple and safe
+
+# 🔥 FIX: Strong CORS (frontend connect kosam)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 def extract_text(file):
     pdf = PyPDF2.PdfReader(file)
@@ -24,7 +26,6 @@ def upload():
         return jsonify({"error": "No file uploaded"}), 400
 
     file = request.files["file"]
-
     text = extract_text(file)
 
     skills = ["python", "java", "sql", "machine learning", "ai"]
