@@ -39,18 +39,23 @@ def match_resume(resume_text, job_text):
     return round(min(score, 100), 2)
 
 # API route
-@app.route('/upload', methods=['POST'])
+@app.route("/upload", methods=["POST"])
 def upload():
-    file = request.files['file']
-    job = request.form['job']
+    if "file" not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
 
-    resume_text = extract_text(file)
-    job_text = job_descriptions[job]
+    file = request.files["file"]
 
-    match = match_resume(resume_text, job_text)
+    text = extract_text(file)
+
+    skills = ["python", "java", "sql", "machine learning", "ai"]
+    found = [s for s in skills if s in text]
+
+    score = (len(found) / len(skills)) * 100
 
     return jsonify({
-        "match": match
+        "score": score,
+        "skills": found
     })
 
 # Run server
