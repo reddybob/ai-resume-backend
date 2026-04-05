@@ -1,26 +1,11 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import PyPDF2
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+import os
 
 app = Flask(__name__)
-from flask_cors import CORS
+CORS(app)   # simple and safe
 
-CORS(app, resources={r"/*": {"origins": "*"}})  # 🔥 Important (frontend connect avvadanki)
-
-# Job descriptions (AI comparison kosam)
-job_descriptions = {
-    "python": "python django flask sql backend developer programming api development software engineer",
-    "data": "machine learning python pandas numpy data analysis statistics deep learning ai",
-    "web": "html css javascript react frontend developer web design ui ux",
-    "ai": "artificial intelligence deep learning neural networks python tensorflow keras",
-    "ml": "machine learning python scikit-learn pandas numpy data science models",
-    "cloud": "aws azure cloud computing devops docker kubernetes linux",
-    "cyber": "cyber security networking ethical hacking penetration testing kali linux"
-}
-
-# Resume nundi text extract
 def extract_text(file):
     pdf = PyPDF2.PdfReader(file)
     text = ""
@@ -29,16 +14,10 @@ def extract_text(file):
             text += page.extract_text()
     return text.lower()
 
-# AI matching (TF-IDF + Cosine Similarity)
-def match_resume(resume_text, job_text):
-    vectorizer = TfidfVectorizer()
-    vectors = vectorizer.fit_transform([resume_text, job_text])
-    
-    similarity = cosine_similarity(vectors[0:1], vectors[1:2])[0][0]
-    score = similarity * 100 * 5
-    return round(min(score, 100), 2)
+@app.route("/", methods=["GET"])
+def home():
+    return "Backend Running 🚀"
 
-# API route
 @app.route("/upload", methods=["POST"])
 def upload():
     if "file" not in request.files:
@@ -58,6 +37,6 @@ def upload():
         "skills": found
     })
 
-# Run server
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
